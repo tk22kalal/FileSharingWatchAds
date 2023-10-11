@@ -27,7 +27,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
     text = message.text
-    if len(text)>7:
+    if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
         except:
@@ -41,7 +41,7 @@ async def start_command(client: Client, message: Message):
             except:
                 return
             if start <= end:
-                ids = range(start,end+1)
+                ids = range(start, end + 1)
             else:
                 ids = []
                 i = start
@@ -68,7 +68,7 @@ async def start_command(client: Client, message: Message):
         for msg in messages:
 
             if bool(CUSTOM_CAPTION) & bool(msg.document):
-                caption = CUSTOM_CAPTION.format(previouscaption = "" if not msg.caption else msg.caption.html, filename = msg.document.file_name)
+                caption = CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, filename=msg.document.file_name)
             else:
                 caption = "" if not msg.caption else msg.caption.html
 
@@ -78,12 +78,14 @@ async def start_command(client: Client, message: Message):
                 reply_markup = None
 
             try:
-                snt_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+                snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup,
+                                          protect_content=PROTECT_CONTENT)
                 await asyncio.sleep(0.5)
                 snt_msgs.append(snt_msg)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
-                snt_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+                snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup,
+                                          protect_content=PROTECT_CONTENT)
                 snt_msgs.append(snt_msg)
             except:
                 pass
@@ -95,28 +97,59 @@ async def start_command(client: Client, message: Message):
                 await snt_msg.delete()
             except:
                 pass
-        
+
         return
     else:
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("😊 About Me", callback_data = "about"),
-                    InlineKeyboardButton("🔒 Close", callback_data = "close")
+                    InlineKeyboardButton("😊 About Me", callback_data="about"),
+                    InlineKeyboardButton("🔒 Close", callback_data="close")
                 ]
             ]
         )
+
+        data = message.command[1]
+
+        if data.split("-", 1)[0] == "verify":
+            userid = data.split("-", 2)[1]
+            token = data.split("-", 3)[2]
+            if str(message.from_user.id) != str(userid):
+                return
+                arg = await message.reply_text(
+                    text="The token you provided is invalid\n\nPlease use new token.",
+                )
+                await asyncio.sleep(5)
+                await arg.delete()
+            chck = await check_token(client, userid, token)
+            if ckck == True:
+                arg = await message.reply_text(
+                    text="You are Verified for today,\n\nNow you can use me.",
+                    protect_content=False
+                )
+                await verify_user(client, userid, token)
+                await asyncio.sleep(20)
+                await arg.delete()
+            else:
+                return
+                arg = await message.reply_text(
+                    text="Invalid token\n\nUse new token.",
+                )
+                await asyncio.sleep(25)
+                await arg.delete()
+            return
+
         await message.reply_text(
-            text = START_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
+            text=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
             ),
-            reply_markup = reply_markup,
-            disable_web_page_preview = True,
-            quote = True
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            quote=True
         )
         return
 
