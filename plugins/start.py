@@ -9,7 +9,7 @@ from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
-
+from verify import *
 from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
 from helper_func import subscribed, encode, decode, get_messages
@@ -27,6 +27,26 @@ async def start_command(client: Client, message: Message):
         except:
             pass
     text = message.text
+
+    if VERIFY and not await check_verification(client, user_id):
+        msg = await message.reply("Please Wait...")
+        ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
+        vbutton = [[
+            InlineKeyboardButton("verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
+        ]]
+        reply_markup = InlineKeyboardMarkup(vbutton)
+        ex = await message.reply_text(
+            text=ex_text,
+            reply_markup=reply_markup,
+            protect_content=False,
+            disable_web_page_preview=True,
+            parse_mode=enums.ParseMode.HTML
+        )
+        await msg.delete()
+        await asyncio.sleep(120)
+        await ex.delete()
+        return
+        
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
