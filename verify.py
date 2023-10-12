@@ -8,7 +8,7 @@ import requests as re
 SHORTNER = os.environ.get("SHORTENER_SITE")
 API = os.environ.get("SHORTENER_API")
 
-async def get_shortlink(link, message):
+async def get_shortlink(link):
     res = re.get(f'https://{SHORTNER}/api?api={API}&url={link}')
     res.raise_for_status()
     data = res.json()
