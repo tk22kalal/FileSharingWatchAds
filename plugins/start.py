@@ -32,7 +32,7 @@ async def start_command(client: Client, message: Message):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
         vbutton = [[
-            InlineKeyboardButton("verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
+            InlineKeyboardButton("verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{client.username}?start="))
         ]]
         reply_markup = InlineKeyboardMarkup(vbutton)
         ex = await message.reply_text(
