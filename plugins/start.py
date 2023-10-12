@@ -28,7 +28,7 @@ async def start_command(client: Client, message: Message):
             pass
     text = message.text
 
-    if VERIFY and not await check_verification(client, user_id):
+    if not await check_verification(client, user_id):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
         vbutton = [[
