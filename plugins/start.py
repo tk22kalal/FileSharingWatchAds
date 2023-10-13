@@ -16,7 +16,7 @@ from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 
 SECONDS = int(os.getenv("SECONDS", "10")) #add time im seconds for waitingwaiting before delete
-
+VERIFY = "True"
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -28,7 +28,7 @@ async def start_command(client: Client, message: Message):
             pass
     text = message.text
 
-    if not await check_verification(client, message.from_user.id):
+    if VERIFY and not await check_verification(client, message.from_user.id):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
         btn = [[
