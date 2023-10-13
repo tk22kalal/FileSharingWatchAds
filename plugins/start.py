@@ -31,16 +31,13 @@ async def start_command(client: Client, message: Message):
     if not await check_verification(client, message.from_user.id):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
-        vbutton = [[
+        btn = [[
             InlineKeyboardButton("verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{client.username}?start="))
         ]]
-        reply_markup = InlineKeyboardMarkup(vbutton)
+        reply_markup = InlineKeyboardMarkup(btn)
         ex = await message.reply_text(
             text=ex_text,
-            reply_markup=reply_markup,
-            protect_content=False,
-            disable_web_page_preview=True,
-            parse_mode=enums.ParseMode.HTML
+            reply_markup=reply_markup
         )
         await msg.delete()
         await asyncio.sleep(120)
