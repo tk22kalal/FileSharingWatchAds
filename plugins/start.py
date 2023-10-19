@@ -30,9 +30,9 @@ async def start_command(client: Client, message: Message):
 
     if VERIFY and not await check_verification(client, message.from_user.id):
         msg = await message.reply("Please Wait...")
-        ex_text = "**Verificatiom Expired!**\n\nYou have to verify again**"
+        ex_text = "**Verification Expired!**\n\nYou have to verify again."
         btn = [[
-            InlineKeyboardButton("verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{client.username}?start="))
+            InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{client.username}?start=verify-{message.from_user.id}-{await get_verification_token(message.from_user.id)}"))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
         ex = await message.reply_text(
@@ -40,7 +40,7 @@ async def start_command(client: Client, message: Message):
             reply_markup=reply_markup
         )
         await msg.delete()
-        await asyncio.sleep(120)
+        await asyncio.sleep(120)  # Adjust the waiting time if needed
         await ex.delete()
         return
         
