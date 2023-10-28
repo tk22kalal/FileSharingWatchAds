@@ -146,46 +146,64 @@ async def start_command(client: Client, message: Message):
 async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
     command = message.command
+
     if command and len(command) > 1:
         data = command[1]
-        if data.startswith("verify-"):                
-        if data.split("-", 1)[0] == "verify":
-            userid = data.split("-", 2)[1]
-            token = data.split("-", 3)[2]
-            if str(user_id) != str(userid):
-                return
-            # Check the provided token
-            is_valid_token = await check_token(client, userid, token)
-            if is_valid_token:
-                arg = await message.reply_text(
-                    text="You are Verified for today,\n\nNow you can use me.",
-                    protect_content=False
-                )
-                await verify_user(client, userid, token)
-                await asyncio.sleep(20)
-                await arg.delete()
+
+        if data.startswith("verify-"):
+            # The data should start with "verify-"
+
+            parts = data.split("-")
+            # Split the data using "-" as the separator
+
+            if len(parts) == 3:
+                # Check if there are three parts: "verify", user ID, and token
+
+                verify_command, userid, token = parts
+                # Extract the components
+
+                if str(user_id) == userid:
+                    # Check if the user ID from the link matches the user's actual ID                 
+
+                    is_valid_token = await check_token(client, userid, token)
+                    if is_valid_token:
+                        # Token is valid, mark the user as verified
+                        await verify_user(client, userid, token)
+                        await asyncio.sleep(20)
+                        await message.reply_text(
+                            text="You are Verified for today,\n\nNow you can use me.",
+                            protect_content=False
+                        )
+                    else:
+                        # Invalid token, handle accordingly
+                        arg = await message.reply_text(
+                            text="Invalid token\n\nUse a new token.",
+                        )
+                        await asyncio.sleep(25)
+                        await arg.delete()
+                else:
+                    # The user ID in the link doesn't match the user's ID
+                    return
             else:
+                # Invalid link format
                 return
-                arg = await message.reply_text(
-                    text="Invalid token\n\nUse a new token.",
-                )
-                await asyncio.sleep(25)
-                await arg.delete()
-            return
-            
-        await message.reply_text(
-            text=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            quote=True
-        )
-        return
+        else:
+            # Handle other "start" commands or unknown formats
+
+    # If it's not a "verify" command, send a welcome message or any other appropriate response
+    await message.reply_text(
+        text=START_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name,
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=reply_markup,
+        disable_web_page_preview=True,
+        quote=True
+    )
+
 
     
 #=====================================================================================##
