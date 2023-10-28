@@ -101,29 +101,47 @@ async def start_command(client: Client, message: Message):
                 pass                
         return
     if VERIFY and not await check_verification(client, user_id):
+        # Send a "Please Wait..." message
         msg = await message.reply("Please Wait...")
+
+        # Create a message for expired verification
         ex_text = "**Verification Expired!**\n\nYou have to verify again."
 
+        # Create an inline button to initiate the verification
         btn = [[
             InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
 
+        # Send a message to start the verification process
         ex = await message.reply_text(
             text=ex_text,
             reply_markup=reply_markup
         )
 
+        # Delete the initial "Please Wait..." message
         await msg.delete()
+
+        # Wait for a certain period (e.g., 120 seconds) for the user to verify
         await asyncio.sleep(120)
+
+        # Delete the verification message
         await ex.delete()
         return
 
+    # Now that the user is verified or not requiring verification, proceed
+    user_id = message.from_user.id
+    command = message.command
+
     if len(text) == 28:
+        # Check if the text is exactly 28 characters long
         token = text[:28]
+
+        # Extract a 28-character token from the beginning of the text
         is_valid_token = await check_token(client, user_id, token)
 
         if is_valid_token:
+            # Token is valid, mark the user as verified
             await verify_user(client, user_id, token)
             await asyncio.sleep(20)
             await message.reply_text(
@@ -131,27 +149,31 @@ async def start_command(client: Client, message: Message):
                 protect_content=False
             )
         else:
+            # Invalid token, handle accordingly
             arg = await message.reply_text(
                 text="Invalid token\n\nUse a new token.",
             )
             await asyncio.sleep(25)
             await arg.delete()
     else:
+        # If the text is not 28 characters long, send an error message
         arg = await message.reply_text(
             text="Invalid token\n\nUse a new token.",
         )
         await asyncio.sleep(25)
         await arg.delete()
-    return
-    
-        reply_markup = InlineKeyboardMarkup(
+
+    # Create an inline keyboard for the welcome message
+    reply_markup = InlineKeyboardMarkup(
+        [
             [
-                [
-                    InlineKeyboardButton("😊 About Me", callback_data="about"),
-                    InlineKeyboardButton("🔒 Close", callback_data="close")
-                ]
+                InlineKeyboardButton("😊 About Me", callback_data="about"),
+                InlineKeyboardButton("🔒 Close", callback_data="close")
             ]
-        )
+        ]
+    )
+
+    # Send a welcome message with the inline keyboard
     await message.reply_text(
         text=START_MSG.format(
             first=message.from_user.first_name,
@@ -164,7 +186,11 @@ async def start_command(client: Client, message: Message):
         disable_web_page_preview=True,
         quote=True
     )
-    return
+
+# The rest of your code goes here
+
+# If you have more code to add, you can place it after the handle_verification function.
+    
 
     
 #=====================================================================================##
