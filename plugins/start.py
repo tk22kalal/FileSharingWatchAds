@@ -98,93 +98,79 @@ async def start_command(client: Client, message: Message):
             try:
                 await snt_msg.delete()
             except:
-                pass
-                
+                pass                
         return
-        
     if VERIFY and not await check_verification(client, user_id):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verification Expired!**\n\nYou have to verify again."
 
-        # Create an inline button to initiate the verification
         btn = [[
             InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
 
-        # Send a message to start the verification process
         ex = await message.reply_text(
             text=ex_text,
             reply_markup=reply_markup
         )
 
-        # Delete the initial "Please Wait..." message
         await msg.delete()
-        # Wait for a certain period (e.g., 120 seconds) for the user to verify
         await asyncio.sleep(120)
-        # Delete the verification message
         await ex.delete()
         return
-    user_id = message.from_user.id
-    command = message.command
-    if command and len(command) > 1:
-        data = command[1]
-        if data.startswith("verify-"):
-            # The data should start with "verify-"
-            parts = data.split("-")
-            # Split the data using "-" as the separator
-            if len(parts) == 3:
-                # Check if there are three parts: "verify", user ID, and token
-                verify_command, userid, token = parts
-                # Extract the components
-                if str(user_id) == userid:
-                    # Check if the user ID from the link matches the user's actual ID                 
-                    is_valid_token = await check_token(client, userid, token)
-                    if is_valid_token:
-                        # Token is valid, mark the user as verified
-                        await verify_user(client, userid, token)
-                        await asyncio.sleep(20)
-                        await message.reply_text(
-                            text="You are Verified for today,\n\nNow you can use me.",
-                            protect_content=False
-                        )
-                    else:
-                        # Invalid token, handle accordingly
-                        arg = await message.reply_text(
-                            text="Invalid token\n\nUse a new token.",
-                        )
-                        await asyncio.sleep(25)
-                        await arg.delete()
-                else:
-                    return
-                    arg = await message.reply_text(
-                        text="Invalid token\n\nUse new token.",
-                    )
-                    await asyncio.sleep(25)
-                    await arg.delete()
-                return    
+
+    if len(text) == 28:
+        token = text[:28]
+        is_valid_token = await check_token(client, user_id, token)
+
+        if is_valid_token:
+            await verify_user(client, user_id, token)
+            await asyncio.sleep(20)
+            await message.reply_text(
+                text="You are Verified for today,\n\nNow you can use me.",
+                protect_content=False
+            )
+        else:
+            arg = await message.reply_text(
+                text="Invalid token\n\nUse a new token.",
+            )
+            await asyncio.sleep(25)
+            await arg.delete()
     else:
-        reply_markup = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("😊 About Me", callback_data="about"),
-                    InlineKeyboardButton("🔒 Close", callback_data="close")
-                ]
-            ]
-        ) 
-    # Send a welcome message with the inline keyboard
-    await message.reply_text(
-        text=START_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=reply_markup,
-        disable_web_page_preview=True,
-        quote=True
-    )
+        arg = await message.reply_text(
+            text="Invalid token\n\nUse a new token.",
+        )
+        await asyncio.sleep(25)
+        await arg.delete()
+
+    return
+reply_markup = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton("😊 About Me", callback_data="about"),
+            InlineKeyboardButton("🔒 Close", callback_data="close")
+        ]
+    ]
+)
+
+await message.reply_text(
+    text=START_MSG.format(
+        first=message.from_user.first_name,
+        last=message.from_user.last_name,
+        username=None if not message.from_user.username else '@' + message.from_user.username,
+        mention=message.from_user.mention,
+        id=message.from_user.id
+    ),
+    reply_markup=reply_markup,
+    disable_web_page_preview=True,
+    quote=True
+)
+
+
+
+
+
+    
 
     
 
