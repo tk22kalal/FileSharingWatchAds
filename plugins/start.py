@@ -142,8 +142,6 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
-async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
     command = message.command
 
