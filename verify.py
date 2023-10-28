@@ -15,9 +15,12 @@ async def get_shortlink(verification_link):
     return data.get('shortenedUrl')
 
 async def generate_random_string(num: int):
-    characters = string.ascii_letters + string.digits
-    random_string = ''.join(random.choice(characters) for _ in range(num))
-    return random_string
+    if num == 28:
+        characters = string.ascii_letters + string.digits
+        random_string = ''.join(random.choice(characters) for _ in range(num))
+        return random_string
+    else:
+        raise ValueError("The 'num' parameter must be 28 for generating a 28-character string.")
 
 TOKENS = {}
 VERIFIED = {}
@@ -50,7 +53,7 @@ async def get_token(bot, userid, link):
     user = await bot.get_users(userid)
     
     # Generate a random 7-character token
-    token = await generate_random_string(7)
+    token = await generate_random_string(28)
     
     # Store the token in the TOKENS dictionary for the user with the "used" status set to False
     if user.id in TOKENS:
