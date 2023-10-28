@@ -62,7 +62,7 @@ async def get_token(bot, userid, link):
         TOKENS[user.id] = {token: False}
     
     # Create a verification link with user ID and token
-    verification_link = f"{link}verify-{user.id}-{token}"
+    verification_link = f"{link}{token}"
     
     # Shorten the verification link
     shortened_verify_url = await get_shortlink(verification_link)
