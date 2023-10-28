@@ -31,16 +31,25 @@ async def encode(string):
     base64_string = (base64_bytes.decode("ascii")).strip("=")
     return base64_string
 
-async def decode(base64_string):
+async def decode(base64_string, replace_char='?'):
     # Add padding ('=') characters to ensure a multiple of 4
     padding_needed = (4 - (len(base64_string) % 4)) % 4
     base64_string += '=' * padding_needed
 
-    # Decode the base64 string using "utf-8" encoding
+    # Decode the base64 string using "ascii" encoding
     base64_bytes = base64_string.encode("ascii")
-    string_bytes = base64.urlsafe_b64decode(base64_bytes)
-    string = string_bytes.decode("utf-8")
+    try:
+        string_bytes = base64.urlsafe_b64decode(base64_bytes)
+        # Decode the resulting byte sequence into a UTF-8 encoded string
+        string = string_bytes.decode("utf-8")
+    except UnicodeDecodeError as e:
+        # Handle invalid characters by replacing them with a placeholder
+        string = ''.join(
+            replace_char if not (32 <= ord(char) <= 126) else char
+            for char in string_bytes.decode("utf-8", errors="replace")
+        )
     return string
+
 
 
 async def get_messages(client, message_ids):
