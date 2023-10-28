@@ -38,7 +38,7 @@ async def check_token(bot, userid, token):
 
 async def get_token(bot, userid, link):
     user = await bot.get_users(userid)
-    token = await generate_random_string(7)
+    token = await generate_random_string(8)
     TOKENS[user.id] = {token: False}
     link = f"{link}verify-{user.id}-{token}"
     shortened_verify_url = await get_shortlink(link)
