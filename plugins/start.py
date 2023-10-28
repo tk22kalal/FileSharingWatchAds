@@ -28,39 +28,7 @@ async def start_command(client: Client, message: Message):
             await add_user(id)
         except:
             pass
-    text = message.text
-
-    if VERIFY and not await check_verification(client, user_id):
-        msg = await message.reply("Please Wait...")
-        ex_text = "**Verification Expired!**\n\nYou have to verify again."
-
-        # Create an inline button to initiate the verification
-        btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
-        ]]
-        reply_markup = InlineKeyboardMarkup(btn)
-
-        # Send a message to start the verification process
-        ex = await message.reply_text(
-            text=ex_text,
-            reply_markup=reply_markup
-        )
-
-        # Delete the initial "Please Wait..." message
-        await msg.delete()
-
-        # Wait for a certain period (e.g., 120 seconds) for the user to verify
-        await asyncio.sleep(120)
-
-        # Delete the verification message
-        await ex.delete()
-
-        return
-
-    # If there is additional data in the message
-    
-    
-            
+    text = message.text                       
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
@@ -131,38 +99,46 @@ async def start_command(client: Client, message: Message):
                 await snt_msg.delete()
             except:
                 pass
-
+                
         return
-    else:
-        reply_markup = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("😊 About Me", callback_data="about"),
-                    InlineKeyboardButton("🔒 Close", callback_data="close")
-                ]
-            ]
+        
+    if VERIFY and not await check_verification(client, user_id):
+        msg = await message.reply("Please Wait...")
+        ex_text = "**Verification Expired!**\n\nYou have to verify again."
+
+        # Create an inline button to initiate the verification
+        btn = [[
+            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+        # Send a message to start the verification process
+        ex = await message.reply_text(
+            text=ex_text,
+            reply_markup=reply_markup
         )
+
+        # Delete the initial "Please Wait..." message
+        await msg.delete()
+        # Wait for a certain period (e.g., 120 seconds) for the user to verify
+        await asyncio.sleep(120)
+        # Delete the verification message
+        await ex.delete()
+        return
     user_id = message.from_user.id
     command = message.command
-
     if command and len(command) > 1:
         data = command[1]
-
         if data.startswith("verify-"):
             # The data should start with "verify-"
-
             parts = data.split("-")
             # Split the data using "-" as the separator
-
             if len(parts) == 3:
                 # Check if there are three parts: "verify", user ID, and token
-
                 verify_command, userid, token = parts
                 # Extract the components
-
                 if str(user_id) == userid:
                     # Check if the user ID from the link matches the user's actual ID                 
-
                     is_valid_token = await check_token(client, userid, token)
                     if is_valid_token:
                         # Token is valid, mark the user as verified
@@ -186,7 +162,16 @@ async def start_command(client: Client, message: Message):
                     )
                     await asyncio.sleep(25)
                     await arg.delete()
-                return
+                return    
+    else:
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton("😊 About Me", callback_data="about"),
+                    InlineKeyboardButton("🔒 Close", callback_data="close")
+                ]
+            ]
+        )    
             await message.reply_text(
                 text=START_MSG.format(
                     first=message.from_user.first_name,
