@@ -182,27 +182,26 @@ async def start_command(client: Client, message: Message):
                         await asyncio.sleep(25)
                         await arg.delete()
                 else:
-                    # The user ID in the link doesn't match the user's ID
                     return
-            else:
-                # Invalid link format
+                    arg = await message.reply_text(
+                        text="Invalid token\n\nUse new token.",
+                    )
+                    await asyncio.sleep(25)
+                    await arg.delete()
                 return
-        else:
-            # Handle other "start" commands or unknown formats
-
-    # If it's not a "verify" command, send a welcome message or any other appropriate response
-    await message.reply_text(
-        text=START_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=reply_markup,
-        disable_web_page_preview=True,
-        quote=True
-    )
+            await message.reply_text(
+                text=START_MSG.format(
+                    first=message.from_user.first_name,
+                    last=message.from_user.last_name,
+                    username=None if not message.from_user.username else '@' + message.from_user.username,
+                    mention=message.from_user.mention,
+                    id=message.from_user.id
+                ),
+                reply_markup=reply_markup,
+                disable_web_page_preview=True,
+                quote=True
+            )
+            return
 
 
     
