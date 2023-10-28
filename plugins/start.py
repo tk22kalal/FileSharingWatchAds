@@ -163,17 +163,15 @@ async def start_command(client: Client, message: Message):
                     await asyncio.sleep(25)
                     await arg.delete()
                 return    
-    else:
-    # Create an inline keyboard with buttons
-    reply_markup = InlineKeyboardMarkup(
-        [
+   else:
+        reply_markup = InlineKeyboardMarkup(
             [
-                InlineKeyboardButton("😊 About Me", callback_data="about"),
-                InlineKeyboardButton("🔒 Close", callback_data="close")
+                [
+                    InlineKeyboardButton("😊 About Me", callback_data="about"),
+                    InlineKeyboardButton("🔒 Close", callback_data="close")
+                ]
             ]
-        ]
-    )
-
+        ) 
     # Send a welcome message with the inline keyboard
     await message.reply_text(
         text=START_MSG.format(
