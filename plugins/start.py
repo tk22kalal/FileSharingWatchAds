@@ -142,20 +142,18 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-
+@Bot.on_message(filters.command('start') & filters.private & subscribed)
+async def start_command(client: Client, message: Message):
+    user_id = message.from_user.id
         data = message.command[1]
-
-        # Check if the command is related to verification
+        if data.startswith("verify-"):                
         if data.split("-", 1)[0] == "verify":
             userid = data.split("-", 2)[1]
             token = data.split("-", 3)[2]
-
             if str(user_id) != str(userid):
                 return
-
             # Check the provided token
             is_valid_token = await check_token(client, userid, token)
-
             if is_valid_token:
                 arg = await message.reply_text(
                     text="You are Verified for today,\n\nNow you can use me.",
@@ -171,7 +169,6 @@ async def start_command(client: Client, message: Message):
                 )
                 await asyncio.sleep(25)
                 await arg.delete()
-
             return
             
         await message.reply_text(
