@@ -143,6 +143,7 @@ async def start_command(client: Client, message: Message):
         await asyncio.sleep(25)
         await arg.delete()
     return
+    else
         reply_markup = InlineKeyboardMarkup(
             [
                 [
@@ -163,6 +164,7 @@ async def start_command(client: Client, message: Message):
         disable_web_page_preview=True,
         quote=True
     )
+    return
 
     
 #=====================================================================================##
