@@ -58,37 +58,7 @@ async def start_command(client: Client, message: Message):
         return
 
     # If there is additional data in the message
-    if message.command and len(message.command) > 1:
-        data = message.command[1]
-
-        # Check if the command is related to verification
-        if data.split("-", 1)[0] == "verify":
-            userid = data.split("-", 2)[1]
-            token = data.split("-", 3)[2]
-
-            if str(user_id) != str(userid):
-                return
-
-            # Check the provided token
-            is_valid_token = await check_token(client, userid, token)
-
-            if is_valid_token:
-                arg = await message.reply_text(
-                    text="You are Verified for today,\n\nNow you can use me.",
-                    protect_content=False
-                )
-                await verify_user(client, userid, token)
-                await asyncio.sleep(20)
-                await arg.delete()
-            else:
-                return
-                arg = await message.reply_text(
-                    text="Invalid token\n\nUse a new token.",
-                )
-                await asyncio.sleep(25)
-                await arg.delete()
-
-            return
+    
     
             
     if len(text) > 7:
@@ -172,7 +142,38 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-        
+
+        data = message.command[1]
+
+        # Check if the command is related to verification
+        if data.split("-", 1)[0] == "verify":
+            userid = data.split("-", 2)[1]
+            token = data.split("-", 3)[2]
+
+            if str(user_id) != str(userid):
+                return
+
+            # Check the provided token
+            is_valid_token = await check_token(client, userid, token)
+
+            if is_valid_token:
+                arg = await message.reply_text(
+                    text="You are Verified for today,\n\nNow you can use me.",
+                    protect_content=False
+                )
+                await verify_user(client, userid, token)
+                await asyncio.sleep(20)
+                await arg.delete()
+            else:
+                return
+                arg = await message.reply_text(
+                    text="Invalid token\n\nUse a new token.",
+                )
+                await asyncio.sleep(25)
+                await arg.delete()
+
+            return
+            
         await message.reply_text(
             text=START_MSG.format(
                 first=message.from_user.first_name,
