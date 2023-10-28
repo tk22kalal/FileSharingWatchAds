@@ -8,8 +8,8 @@ import requests as re
 SHORTNER = os.environ.get("SHORTENER_SITE")
 API = os.environ.get("SHORTENER_API")
 
-async def get_shortlink(link):
-    res = re.get(f'https://{SHORTNER}/api?api={API}&url={link}')
+async def get_shortlink(verification_link)
+    res = re.get(f'https://{SHORTNER}/api?api={API}&url={verification_link}')
     res.raise_for_status()
     data = res.json()
     return data.get('shortenedUrl')
@@ -22,27 +22,51 @@ async def generate_random_string(num: int):
 TOKENS = {}
 VERIFIED = {}
 
-async def check_token(bot, userid, token):
-    user = await bot.get_users(userid)
-    if user.id in TOKENS.keys():
-        TKN = TOKENS[user.id]
-        if token in TKN.keys():
-            is_used = TKN[token]
-            if is_used == True:
-                return False
-            else:
-                return True
-    else:
-        return False
+# A dictionary to store user tokens and their usage status
+TOKENS = {}
 
+async def check_token(bot, userid, token):
+    # Ensure the user exists
+    user = await bot.get_users(userid)
+    
+    # Check if the user's ID is in the TOKENS dictionary
+    if user.id in TOKENS:
+        # Get the user's token dictionary
+        user_tokens = TOKENS[user.id]
+        
+        # Check if the provided token exists for the user
+        if token in user_tokens:
+            # Check if the token has been used (True) or not (False)
+            is_used = user_tokens[token]
+            
+            # Return True if the token is valid and not used, otherwise return False
+            return not is_used
+    
+    # If the user or token doesn't exist, return False
+    return False
 
 async def get_token(bot, userid, link):
+    # Ensure the user exists
     user = await bot.get_users(userid)
+    
+    # Generate a random 7-character token
     token = await generate_random_string(7)
-    TOKENS[user.id] = {token: False}
-    link = f"{link}verify-{user.id}-{token}"
-    shortened_verify_url = await get_shortlink(link)
+    
+    # Store the token in the TOKENS dictionary for the user with the "used" status set to False
+    if user.id in TOKENS:
+        TOKENS[user.id][token] = False
+    else:
+        TOKENS[user.id] = {token: False}
+    
+    # Create a verification link with user ID and token
+    verification_link = f"{link}verify-{user.id}-{token}"
+    
+    # Shorten the verification link
+    shortened_verify_url = await get_shortlink(verification_link)
+    
+    # Return the shortened verification link
     return str(shortened_verify_url)
+
 
 async def verify_user(bot, userid, token):
     user = await bot.get_users(userid)
