@@ -145,7 +145,9 @@ async def start_command(client: Client, message: Message):
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     user_id = message.from_user.id
-        data = message.command[1]
+    command = message.command
+    if command and len(command) > 1:
+        data = command[1]
         if data.startswith("verify-"):                
         if data.split("-", 1)[0] == "verify":
             userid = data.split("-", 2)[1]
