@@ -29,22 +29,67 @@ async def start_command(client: Client, message: Message):
             pass
     text = message.text
 
-    if VERIFY and not await check_verification(client, message.from_user.id):
+    if VERIFY and not await check_verification(client, user_id):
         msg = await message.reply("Please Wait...")
         ex_text = "**Verification Expired!**\n\nYou have to verify again."
+
+        # Create an inline button to initiate the verification
         btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{client.username}?start="))
+            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
+
+        # Send a message to start the verification process
         ex = await message.reply_text(
             text=ex_text,
             reply_markup=reply_markup
         )
+
+        # Delete the initial "Please Wait..." message
         await msg.delete()
-        await asyncio.sleep(120)  # Adjust the waiting time if needed
+
+        # Wait for a certain period (e.g., 120 seconds) for the user to verify
+        await asyncio.sleep(120)
+
+        # Delete the verification message
         await ex.delete()
+
         return
-        
+
+    # If there is additional data in the message
+    if message.command and len(message.command) > 1:
+        data = message.command[1]
+
+        # Check if the command is related to verification
+        if data.split("-", 1)[0] == "verify":
+            userid = data.split("-", 2)[1]
+            token = data.split("-", 3)[2]
+
+            if str(user_id) != str(userid):
+                return
+
+            # Check the provided token
+            is_valid_token = await check_token(client, userid, token)
+
+            if is_valid_token:
+                arg = await message.reply_text(
+                    text="You are Verified for today,\n\nNow you can use me.",
+                    protect_content=False
+                )
+                await verify_user(client, userid, token)
+                await asyncio.sleep(20)
+                await arg.delete()
+            else:
+                return
+                arg = await message.reply_text(
+                    text="Invalid token\n\nUse a new token.",
+                )
+                await asyncio.sleep(25)
+                await arg.delete()
+
+            return
+    
+            
     if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
@@ -126,37 +171,7 @@ async def start_command(client: Client, message: Message):
                 ]
             ]
         )
-
-        data = message.command[1]
-
-        if data.split("-", 1)[0] == "verify":
-            userid = data.split("-", 2)[1]
-            token = data.split("-", 3)[2]
-            if str(message.from_user.id) != str(userid):
-                return
-                arg = await message.reply_text(
-                    text="The token you provided is invalid\n\nPlease use new token.",
-                )
-                await asyncio.sleep(5)
-                await arg.delete()
-            chck = await check_token(client, userid, token)
-            if ckck == True:
-                arg = await message.reply_text(
-                    text="You are Verified for today,\n\nNow you can use me.",
-                    protect_content=False
-                )
-                await verify_user(client, userid, token)
-                await asyncio.sleep(20)
-                await arg.delete()
-            else:
-                return
-                arg = await message.reply_text(
-                    text="Invalid token\n\nUse new token.",
-                )
-                await asyncio.sleep(25)
-                await arg.delete()
-            return
-
+        
         await message.reply_text(
             text=START_MSG.format(
                 first=message.from_user.first_name,
