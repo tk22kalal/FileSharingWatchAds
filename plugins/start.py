@@ -58,6 +58,10 @@ async def start_command(client: Client, message: Message):
         # Delete the verification message
         await ex.delete()
         return
+        
+    if len(message.command) < 2:
+        await message.reply("You need to provide a verification token with the /start command.")
+        return
 
     data = message.command[1]
 
