@@ -5,8 +5,8 @@ import pytz
 from datetime import date
 import requests as re
 
-SHORTNER = os.environ.get("SHORTENER_SITE")
-API = os.environ.get("SHORTENER_API")
+SHORTNER = os.environ.get("SHORTNER_URL")
+API = os.environ.get("SHORTNER_API")
 
 async def get_shortlink(link):
     res = re.get(f'https://{SHORTNER}/api?api={API}&url={link}')
