@@ -65,7 +65,7 @@ async def start_command(client: Client, message: Message):
             return
         string = await decode(base64_string)
         argument = string.split("-")
-         if len(argument) == 3:
+        if len(argument) == 3:
                 # Check if there are three parts: "verify", user ID, and token
                 verify_command, userid, token = parts
                 # Extract the components
