@@ -66,45 +66,47 @@ async def start_command(client: Client, message: Message):
         string = await decode(base64_string)
         argument = string.split("-")
         if len(argument) == 3:
-                # Check if there are three parts: "verify", user ID, and token
-                verify_command, userid, token = parts
-                # Extract the components
-                if str(user_id) == userid:
-                    # Check if the user ID from the link matches the user's actual ID                 
-                    is_valid_token = await check_token(client, userid, token)
-                    if is_valid_token:
-                        # Token is valid, mark the user as verified
-                        await verify_user(client, userid, token)
-                        await asyncio.sleep(20)
-                        await message.reply_text(
-                            text="You are Verified for today,\n\nNow you can use me.",
-                            protect_content=False
-                        )
-                    else:
-                        # Invalid token, handle accordingly
-                        arg = await message.reply_text(
-                            text="Invalid token\n\nUse a new token.",
-                        )
-                        await asyncio.sleep(25)
-                        await arg.delete()
-                else:
-                    return
-                    arg = await message.reply_text(
-                        text="Invalid token\n\nUse new token.",
-                    )
-                    await asyncio.sleep(25)
-                    await arg.delete()
-                return       
-            if start <= end:
-                ids = range(start, end + 1)
+        # Check if there are three parts: "verify", user ID, and token
+        verify_command, userid, token = argument  # Fix the variable name 'parts' to 'argument'
+        # Extract the components
+
+        if str(user_id) == userid:
+            # Check if the user ID from the link matches the user's actual ID
+            is_valid_token = await check_token(client, userid, token)
+
+            if is_valid_token:
+                # Token is valid, mark the user as verified
+                await verify_user(client, userid, token)
+                await asyncio.sleep(20)
+                await message.reply_text(
+                    text="You are Verified for today,\n\nNow you can use me.",
+                    protect_content=False
+                )
             else:
-                ids = []
-                i = start
-                while True:
-                    ids.append(i)
-                    i -= 1
-                    if i < end:
-                        break
+                # Invalid token, handle accordingly
+                arg = await message.reply_text(
+                    text="Invalid token\n\nUse a new token.",
+                )
+                await asyncio.sleep(25)
+                await arg.delete()
+        else:
+            return
+            arg = await message.reply_text(
+                text="Invalid token\n\nUse new token.",
+            )
+            await asyncio.sleep(25)
+            await arg.delete()
+    else:
+        if start <= end:
+            ids = range(start, end + 1)
+        else:
+            ids = []
+            i = start
+            while True:
+                ids.append(i)
+                i -= 1
+                if i < end:
+                    break
         elif len(argument) == 2:
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
