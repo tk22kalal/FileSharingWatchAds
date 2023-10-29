@@ -61,41 +61,41 @@ async def start_command(client: Client, message: Message):
             return
 
     # The rest of your code...
-    data = message.command[1]
+    if len(message.command) > 1:
+        data = message.command[1]
 
-    if data.split("-", 1)[0] == "verify":
-        userid = data.split("-", 2)[1]
-        token = data.split("-", 3)[2]
+        if data.split("-", 1)[0] == "verify":
+            userid = data.split("-", 2)[1]
+            token = data.split("-", 3)[2]
 
-        if str(message.from_user.id) != str(userid):
-            return
+            if str(message.from_user.id) != str(userid):
+                return
 
-        arg = await message.reply_text(
-            text="The token you provided is invalid\n\nPlease use a new token.",
-        )
-
-        await asyncio.sleep(5)
-        await arg.delete()
-
-        chck = await check_token(client, userid, token)
-
-        if chck:
             arg = await message.reply_text(
-                text="You are Verified for today,\n\nNow you can use me.",
-                protect_content=False
+                text="The token you provided is invalid\n\nPlease use a new token.",
             )
-            await verify_user(client, userid, token)
-            await asyncio.sleep(20)
-            await arg.delete()
-        else:
-            return
 
-        arg = await message.reply_text(
-            text="Invalid token\n\nUse a new token.",
-        )
-        await asyncio.sleep(25)
-        await arg.delete()
-        return
+            await asyncio.sleep(5)
+            await arg.delete()
+
+            chck = await check_token(client, userid, token)
+
+            if chck:
+                arg = await message.reply_text(
+                    text="You are Verified for today,\n\nNow you can use me.",
+                    protect_content=False
+                )
+                await verify_user(client, userid, token)
+                await asyncio.sleep(20)
+                await arg.delete()
+            else:
+                return
+
+            arg = await message.reply_text(
+                text="Invalid token\n\nUse a new token.",
+            )
+            await asyncio.sleep(25)
+            await arg.delete()
 
 
     text = message.text
