@@ -30,17 +30,6 @@ async def start_command(client: Client, message: Message):
         except:
             pass
 
-    @Bot.on_message(filters.command('start') & filters.private & subscribed)
-async def start_command(client: Client, message: Message):
-    user_id = message.from_user.id
-    id = message.from_user.id
-
-    if not await present_user(id):
-        try:
-            await add_user(id)
-        except:
-            pass
-
     if VERIFY and len(message.command) > 2:
         if not await check_verification(client, user_id):
             # Send a "Please Wait..." message
@@ -72,6 +61,7 @@ async def start_command(client: Client, message: Message):
             return
 
     # The rest of your code...
+
 
         
     data = message.command[2]
