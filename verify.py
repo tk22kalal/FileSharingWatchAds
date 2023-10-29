@@ -5,6 +5,7 @@ import pytz
 from datetime import date
 import requests as re
 from config import SHORTNER_URL, SHORTNER_API
+
 SHORTNER = os.environ.get("SHORTNER_URL")
 API = os.environ.get("SHORTNER_API")
 
