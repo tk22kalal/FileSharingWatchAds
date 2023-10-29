@@ -28,20 +28,73 @@ async def start_command(client: Client, message: Message):
             await add_user(id)
         except:
             pass
+    if VERIFY and not await check_verification(client, user_id):
+        # Send a "Please Wait..." message
+        msg = await message.reply("Please Wait...")
+
+        # Create a message for expired verification
+        ex_text = "**Verification Expired!**\n\nYou have to verify again."
+
+        # Create an inline button to initiate the verification
+        btn = [[
+            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+        # Send a message to start the verification process
+        ex = await message.reply_text(
+            text=ex_text,
+            reply_markup=reply_markup
+        )
+
+        # Delete the initial "Please Wait..." message
+        await msg.delete()
+
+        # Wait for a certain period (e.g., 120 seconds) for the user to verify
+        await asyncio.sleep(120)
+
+        # Delete the verification message
+        await ex.delete()
+        return
+        
     text = message.text                       
-    if len(text) == 26:
+    if len(text) > 7:
         try:
             base64_string = text.split(" ", 1)[1]
         except:
             return
         string = await decode(base64_string)
         argument = string.split("-")
-        if len(argument) == 3:
-            try:
-                start = int(int(argument[1]) / abs(client.db_channel.id))
-                end = int(int(argument[2]) / abs(client.db_channel.id))
-            except:
-                return
+         if len(argument) == 3:
+                # Check if there are three parts: "verify", user ID, and token
+                verify_command, userid, token = parts
+                # Extract the components
+                if str(user_id) == userid:
+                    # Check if the user ID from the link matches the user's actual ID                 
+                    is_valid_token = await check_token(client, userid, token)
+                    if is_valid_token:
+                        # Token is valid, mark the user as verified
+                        await verify_user(client, userid, token)
+                        await asyncio.sleep(20)
+                        await message.reply_text(
+                            text="You are Verified for today,\n\nNow you can use me.",
+                            protect_content=False
+                        )
+                    else:
+                        # Invalid token, handle accordingly
+                        arg = await message.reply_text(
+                            text="Invalid token\n\nUse a new token.",
+                        )
+                        await asyncio.sleep(25)
+                        await arg.delete()
+                else:
+                    return
+                    arg = await message.reply_text(
+                        text="Invalid token\n\nUse new token.",
+                    )
+                    await asyncio.sleep(25)
+                    await arg.delete()
+                return       
             if start <= end:
                 ids = range(start, end + 1)
             else:
@@ -99,70 +152,7 @@ async def start_command(client: Client, message: Message):
                 await snt_msg.delete()
             except:
                 pass                
-        return
-    if VERIFY and not await check_verification(client, user_id):
-        # Send a "Please Wait..." message
-        msg = await message.reply("Please Wait...")
-
-        # Create a message for expired verification
-        ex_text = "**Verification Expired!**\n\nYou have to verify again."
-
-        # Create an inline button to initiate the verification
-        btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start="))
-        ]]
-        reply_markup = InlineKeyboardMarkup(btn)
-
-        # Send a message to start the verification process
-        ex = await message.reply_text(
-            text=ex_text,
-            reply_markup=reply_markup
-        )
-
-        # Delete the initial "Please Wait..." message
-        await msg.delete()
-
-        # Wait for a certain period (e.g., 120 seconds) for the user to verify
-        await asyncio.sleep(120)
-
-        # Delete the verification message
-        await ex.delete()
-        return
-
-    # Now that the user is verified or not requiring verification, proceed
-    user_id = message.from_user.id
-    command = message.command
-
-    if len(text) == 28:
-        # Check if the text is exactly 28 characters long
-        token = text[:28]
-
-        # Extract a 28-character token from the beginning of the text
-        is_valid_token = await check_token(client, user_id, token)
-
-        if is_valid_token:
-            # Token is valid, mark the user as verified
-            await verify_user(client, user_id, token)
-            await asyncio.sleep(20)
-            await message.reply_text(
-                text="You are Verified for today,\n\nNow you can use me.",
-                protect_content=False
-            )
-        else:
-            # Invalid token, handle accordingly
-            arg = await message.reply_text(
-                text="Invalid token\n\nUse a new token.",
-            )
-            await asyncio.sleep(25)
-            await arg.delete()
-    else:
-        # If the text is not 28 characters long, send an error message
-        arg = await message.reply_text(
-            text="Invalid token\n\nUse a new token.",
-        )
-        await asyncio.sleep(25)
-        await arg.delete()
-
+        return    
     # Create an inline keyboard for the welcome message
     reply_markup = InlineKeyboardMarkup(
         [
