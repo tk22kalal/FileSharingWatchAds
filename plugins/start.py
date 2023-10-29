@@ -30,34 +30,49 @@ async def start_command(client: Client, message: Message):
         except:
             pass
 
-    if VERIFY and not await check_verification(client, user_id):
-        # Send a "Please Wait..." message
-        msg = await message.reply("Please Wait...")
+    @Bot.on_message(filters.command('start') & filters.private & subscribed)
+async def start_command(client: Client, message: Message):
+    user_id = message.from_user.id
+    id = message.from_user.id
 
-        # Create a message for expired verification
-        ex_text = "**Verification Expired!**\n\nYou have to verify again."
+    if not await present_user(id):
+        try:
+            await add_user(id)
+        except:
+            pass
 
-        # Create an inline button to initiate the verification
-        btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[2]}"))
-        ]]
-        reply_markup = InlineKeyboardMarkup(btn)
+    if VERIFY and len(message.command) > 2:
+        if not await check_verification(client, user_id):
+            # Send a "Please Wait..." message
+            msg = await message.reply("Please Wait...")
 
-        # Send a message to start the verification process
-        ex = await message.reply_text(
-            text=ex_text,
-            reply_markup=reply_markup
-        )
+            # Create a message for expired verification
+            ex_text = "**Verification Expired!**\n\nYou have to verify again."
 
-        # Delete the initial "Please Wait..." message
-        await msg.delete()
+            # Create an inline button to initiate the verification
+            btn = [[
+                InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[2]}"))
+            ]]
+            reply_markup = InlineKeyboardMarkup(btn)
 
-        # Wait for a certain period (e.g., 120 seconds) for the user to verify
-        await asyncio.sleep(120)
+            # Send a message to start the verification process
+            ex = await message.reply_text(
+                text=ex_text,
+                reply_markup=reply_markup
+            )
 
-        # Delete the verification message
-        await ex.delete()
-        return
+            # Delete the initial "Please Wait..." message
+            await msg.delete()
+
+            # Wait for a certain period (e.g., 120 seconds) for the user to verify
+            await asyncio.sleep(120)
+
+            # Delete the verification message
+            await ex.delete()
+            return
+
+    # The rest of your code...
+
         
     data = message.command[2]
 
