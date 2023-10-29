@@ -30,7 +30,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
 
-    if VERIFY and len(message.command) > 2:
+    if VERIFY and len(message.command) > 1:  # Check if message.command has enough elements
         if not await check_verification(client, user_id):
             # Send a "Please Wait..." message
             msg = await message.reply("Please Wait...")
@@ -61,9 +61,6 @@ async def start_command(client: Client, message: Message):
             return
 
     # The rest of your code...
-
-
-        
     data = message.command[1]
 
     if data.split("-", 1)[0] == "verify":
@@ -99,6 +96,7 @@ async def start_command(client: Client, message: Message):
         await asyncio.sleep(25)
         await arg.delete()
         return
+
 
     text = message.text
     if len(text) > 7:
