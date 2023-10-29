@@ -30,8 +30,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
 
-    if VERIFY and len(message.command) > 1:  # Check if message.command has enough elements
-        if not await check_verification(client, user_id):
+    if VERIFY and not await check_verification(client, user_id):
             # Send a "Please Wait..." message
             msg = await message.reply("Please Wait...")
 
