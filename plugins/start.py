@@ -59,9 +59,9 @@ async def start_command(client: Client, message: Message):
         await ex.delete()
         return
 
-    data = message.text
+    text = message.command[1]
 
-    if data.split("-", 1)[0] == "verify":
+    if text.split("-", 1)[0] == "verify":
         userid = data.split("-", 2)[1]
         token = data.split("-", 3)[2]
         if str(message.from_user.id) != str(userid):
