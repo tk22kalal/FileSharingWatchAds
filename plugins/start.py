@@ -39,7 +39,7 @@ async def start_command(client: Client, message: Message):
 
         # Create an inline button to initiate the verification
         btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[1]}"))
+            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[2]}"))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
 
@@ -59,11 +59,8 @@ async def start_command(client: Client, message: Message):
         await ex.delete()
         return
         
-    if len(message.command) < 2:
-        await message.reply("You need to provide a verification token with the /start command.")
-        return
 
-    data = message.command[1]
+    data = message.command[2]
 
     if data.split("-", 1)[0] == "verify":
         userid = data.split("-", 2)[1]
@@ -225,7 +222,7 @@ async def not_joined(client: Client, message: Message):
             [
                 InlineKeyboardButton(
                     text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[2]}"
+                    url = f"https://t.me/{client.username}?start={message.command[1]}"
                 )
             ]
         )
