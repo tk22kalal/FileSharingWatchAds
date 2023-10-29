@@ -29,7 +29,7 @@ async def start_command(client: Client, message: Message):
         except:
             pass
     text = message.text                       
-    if len(text) > 7:
+    if len(text) = 26:
         try:
             base64_string = text.split(" ", 1)[1]
         except:
