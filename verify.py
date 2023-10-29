@@ -15,12 +15,9 @@ async def get_shortlink(verification_link):
     return data.get('shortenedUrl')
 
 async def generate_random_string(num: int):
-    if num == 28:
-        characters = string.ascii_letters + string.digits
-        random_string = ''.join(random.choice(characters) for _ in range(num))
-        return random_string
-    else:
-        raise ValueError("The 'num' parameter must be 28 for generating a 28-character string.")
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(num))
+    return random_string
 
 TOKENS = {}
 VERIFIED = {}
@@ -62,7 +59,7 @@ async def get_token(bot, userid, link):
         TOKENS[user.id] = {token: False}
     
     # Create a verification link with user ID and token
-    verification_link = f"{link}{token}"
+    verification_link = f"{link}verify-{user.id}-{token}"
     
     # Shorten the verification link
     shortened_verify_url = await get_shortlink(verification_link)
