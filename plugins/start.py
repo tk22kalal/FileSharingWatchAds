@@ -39,7 +39,7 @@ async def start_command(client: Client, message: Message):
 
         # Create an inline button to initiate the verification
         btn = [[
-            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[2]}"))
+            InlineKeyboardButton("Verify", url=await get_token(client, user_id, f"https://telegram.me/{client.username}?start={message.command[2]} if len(message.command) > 2 else"))
         ]]
         reply_markup = InlineKeyboardMarkup(btn)
 
