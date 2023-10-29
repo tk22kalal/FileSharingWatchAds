@@ -8,6 +8,20 @@ import requests as re
 SHORTNER = os.environ.get("SHORTENER_SITE")
 API = os.environ.get("SHORTENER_API")
 
+class temp(object):
+    BANNED_USERS = []
+    BANNED_CHATS = []
+    ME = None
+    CURRENT=int(os.environ.get("SKIP", 2))
+    CANCEL = False
+    MELCOW = {}
+    U_NAME = None
+    B_NAME = None
+    GETALL = {}
+    SHORT = {}
+    SETTINGS = {}
+    IMDB_CAP = {}
+    
 async def get_shortlink(link):
     res = re.get(f'https://{SHORTNER}/api?api={API}&url={link}')
     res.raise_for_status()
