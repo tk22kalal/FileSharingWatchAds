@@ -50,7 +50,7 @@ async def get_token(bot, userid, link):
     user = await bot.get_users(userid)
     
     # Generate a random 7-character token
-    token = await generate_random_string(28)
+    token = await generate_random_string(7)
     
     # Store the token in the TOKENS dictionary for the user with the "used" status set to False
     if user.id in TOKENS:
